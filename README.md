@@ -2,7 +2,7 @@
 
 Repository ini berisi *source code* backend untuk aplikasi Job Tracking (manajemen status lamaran kerja). Di sini saya menggunakan Laravel untuk menyediakan RESTful API yang nantinya dikonsumsi oleh aplikasi Frontend.
 
-* **Frontend Repository:** (https://github.com/username/job-tracking-client)
+* **Frontend Repository:** (https://github.com/mahendraloka/job-tracking-client)
 
 ## Fitur API
 * **Autentikasi:** Registrasi dan Login user (menggunakan Laravel Sanctum).
