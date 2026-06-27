@@ -10,15 +10,10 @@ use Illuminate\Http\Request;
 
 class JobApplicationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function getStats()
     {
-        // Mengambil ID user yang sedang login via token Sanctum
         $userId = Auth::id();
     
-        // Menghitung jumlah data berdasarkan status masing-masing menggunakan agregasi MySQL
         $stats = JobApplication::where('user_id', $userId)
             ->selectRaw("
                 COUNT(CASE WHEN status = 'Applied' THEN 1 END) as applied,
@@ -28,7 +23,6 @@ class JobApplicationController extends Controller
             ")
             ->first();
     
-        // Mengembalikan data siap konsumsi untuk React 19
         return response()->json([
             'applied'   => (int) ($stats->applied ?? 0),
             'interview' => (int) ($stats->interview ?? 0),
@@ -38,8 +32,6 @@ class JobApplicationController extends Controller
     }
     public function index(Request $request)
     {
-        // Ambil data user yang sedang login, lalu ambil data lowongannya
-        // Diurutkan berdasarkan tanggal apply terbaru
         $jobs = $request->user()->jobApplications()->latest('applied_date')->paginate(10);
 
         return response()->json([
@@ -49,12 +41,8 @@ class JobApplicationController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validasi input dari React
         $request->validate([
             'company_name' => 'required|string|max:255',
             'job_title' => 'required|string|max:255',
@@ -65,7 +53,6 @@ class JobApplicationController extends Controller
             'salary_expectation' => 'nullable|integer',
         ]);
 
-        // Simpan data ke database lewat user yang sedang login
         $job = $request->user()->jobApplications()->create($request->all());
 
         return response()->json([
@@ -75,12 +62,8 @@ class JobApplicationController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request, string $id)
     {
-        // Cari lowongan berdasarkan ID, pastikan itu milik user yang sedang login
         $job = $request->user()->jobApplications()->find($id);
 
         if (!$job) {
@@ -96,12 +79,8 @@ class JobApplicationController extends Controller
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
-        // Cari data lowongan milik user
         $job = $request->user()->jobApplications()->find($id);
 
         if (!$job) {
@@ -111,7 +90,6 @@ class JobApplicationController extends Controller
             ], 404);
         }
 
-        // Validasi input data yang diubah
         $request->validate([
             'company_name' => 'sometimes|required|string|max:255',
             'job_title' => 'sometimes|required|string|max:255',
@@ -122,7 +100,6 @@ class JobApplicationController extends Controller
             'salary_expectation' => 'nullable|integer',
         ]);
 
-        // Update data di database
         $job->update($request->all());
 
         return response()->json([
@@ -132,12 +109,8 @@ class JobApplicationController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Request $request, string $id)
     {
-        // Cari data lowongan milik user
         $job = $request->user()->jobApplications()->find($id);
 
         if (!$job) {
@@ -147,7 +120,6 @@ class JobApplicationController extends Controller
             ], 404);
         }
 
-        // Hapus dari database
         $job->delete();
 
         return response()->json([

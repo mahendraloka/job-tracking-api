@@ -20,7 +20,6 @@ class JobApplication extends Model
         'salary_expectation'
     ];
 
-    // Relasi balik ke User
     public function user()
     {
         return $this->belongsTo(User::class);
